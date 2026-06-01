@@ -132,8 +132,8 @@ pip install pandas numpy kafka-python
 ### Langkah 1 — Clone Repository
 
 ```bash
-git clone <url-repo-kalian>
-cd <nama-folder-repo>
+git clone https://github.com/VarrelT/BDP-Final-Project-Kelompok-4
+cd FInal Project BDP Zomato Delivery\Project
 ```
 
 Struktur folder yang diharapkan:
