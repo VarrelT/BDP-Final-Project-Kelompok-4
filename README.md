@@ -142,24 +142,27 @@ Struktur folder yang diharapkan:
 Project/
 ├── docker-compose.yml
 ├── README.md
+├── .gitignore
 ├── data/
-│   ├── cleaning.py          ← script cleaning (dari Cekdata.ipynb)
-│   ├── zomato.csv           ← download dari Kaggle (raw) — letakkan di sini
-│   └── zomato_clean.csv     ← dibuat otomatis setelah menjalankan cleaning.py
+│   ├── cleaning.py              ← script cleaning
+│   └── Zomato Dataset.csv       
 ├── producer/
 │   ├── producer.py
 │   └── requirement.txt
 ├── jobs/
 │   ├── batch_analysis.py
 │   └── streaming_job.py
-└── dashboard/
-    ├── app.py
-    ├── Dockerfile
-    └── requirements.txt
+├── dashboard/
+│   ├── app.py
+│   ├── Dockerfile
+│   └── requirements.txt
+├── hadoop_config/
+│   ├── core-site.xml
+│   └── hdfs-site.xml
+├── start-hdfs.sh
+└── init-datanode.sh
 ```
 
-> **Download dataset**: https://www.kaggle.com/datasets/saurabhbadole/zomato-delivery-operations-analytics-dataset
-> Rename file menjadi `zomato.csv` dan taruh di folder `data/`.
 
 ---
 
@@ -191,6 +194,12 @@ File `data/zomato_clean.csv` akan terbentuk otomatis. File ini yang digunakan ol
 
 ### Langkah 3 — Buat Folder yang Dibutuhkan
 
+**PowerShell (Windows):**
+```powershell
+New-Item -ItemType Directory -Path checkpoints, dashboard_data, hadoop_config, hadoop_namenode, hadoop_datanode1, hadoop_tmp -Force | Out-Null
+```
+
+**Bash (Linux/Mac):**
 ```bash
 mkdir -p checkpoints dashboard_data hadoop_config hadoop_namenode hadoop_datanode1 hadoop_tmp
 chmod 777 checkpoints dashboard_data
@@ -227,7 +236,8 @@ Semua container berikut harus berstatus `Up`:
 
 ### Langkah 5 — Upload Dataset Bersih ke HDFS
 
-```bash
+**PowerShell (Windows):**
+```powershell
 # Buat direktori di HDFS
 docker exec -it namenode hdfs dfs -mkdir -p /data
 
@@ -241,6 +251,8 @@ docker exec -it namenode hdfs dfs -put /tmp/zomato_clean.csv /data/zomato_clean.
 docker exec -it namenode hdfs dfs -ls /data/
 ```
 
+**Bash (Linux/Mac):** *(sama seperti di atas)*
+
 Output yang diharapkan:
 ```
 Found 1 items
@@ -251,6 +263,14 @@ Found 1 items
 
 ### Langkah 6 — Submit Spark Batch Job
 
+**PowerShell (Windows):**
+```powershell
+docker exec -it spark-master /opt/spark/bin/spark-submit `
+  --master spark://spark-master:7077 `
+  /opt/jobs/batch_analysis.py
+```
+
+**Bash (Linux/Mac):**
 ```bash
 docker exec -it spark-master /opt/spark/bin/spark-submit \
   --master spark://spark-master:7077 \
@@ -284,6 +304,15 @@ Biarkan producer tetap berjalan di terminal ini.
 
 ### Langkah 8 — Submit Spark Streaming Job (Terminal Baru)
 
+**PowerShell (Windows):**
+```powershell
+docker exec -it spark-master /opt/spark/bin/spark-submit `
+  --master spark://spark-master:7077 `
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.0 `
+  /opt/jobs/streaming_job.py
+```
+
+**Bash (Linux/Mac):**
 ```bash
 docker exec -it spark-master /opt/spark/bin/spark-submit \
   --master spark://spark-master:7077 \
