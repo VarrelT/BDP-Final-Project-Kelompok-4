@@ -10,7 +10,7 @@
   zomato.csv (raw, dari Kaggle)
        │
        ▼
-  [cleaning.py]           ← jalankan SEKALI di lokal (Python)
+  [cleaning.py]           
        │
        ▼
   zomato_clean.csv
@@ -381,25 +381,14 @@ Output setiap 10 detik:
 
 ## Findings & Conclusion
 
-*(Isi setelah batch job dijalankan)*
-
 Berdasarkan hasil batch analysis:
-- **Traffic density** adalah faktor dominan. Kondisi `Jam` menghasilkan rata-rata waktu delivery ~2× lebih lama dibanding `Low`.
-- **Cuaca** berkontribusi namun tidak sebesar traffic. Kondisi `Stormy` dan `Sandstorms` menambah waktu delivery.
-- **Kota Metropolitan** memiliki rata-rata waktu tertinggi karena kepadatan jalanan.
-- Heatmap menunjukkan kombinasi **Jam + Stormy** adalah skenario terburuk.
+
 
 Dari streaming real-time:
-- Distribusi order per kota relatif merata di setiap batch.
-- Traffic `High` dan `Jam` mendominasi, mencerminkan jam sibuk pengiriman.
+
 
 ---
 
 ## Known Limitations
 
-- **Dataset statis**: Producer membaca ulang `zomato_clean.csv` yang sama — bukan data live sungguhan, hanya simulasi.
-- **Single Kafka broker**: Tanpa replikasi, tidak cocok untuk produksi.
-- **HDFS single DataNode**: Tidak ada replikasi data.
-- **Streaming tidak berbasis event time**: Menggunakan processing time, bukan `Order_Date` asli.
-- **Batch tidak terjadwal otomatis**: Harus dijalankan manual via spark-submit.
-- **Improvement**: Dengan lebih banyak waktu, pipeline dapat ditambahkan scheduling (Airflow), multi-node HDFS, dan windowing berbasis event time yang akurat.
+- **Dataset statis**: Producer membaca ulang `zomato_clean.csv` yang sama, bukan data live sungguhan, hanya simulasi live.
