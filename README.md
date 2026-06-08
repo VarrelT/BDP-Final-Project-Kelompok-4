@@ -133,6 +133,8 @@ pip install pandas numpy kafka-python
 
 ```bash
 git clone https://github.com/VarrelT/BDP-Final-Project-Kelompok-4
+cd "BDP-Final-Project-Kelompok-4\FInal Project BDP Zomato Delivery\Project"
+atau
 cd FInal Project BDP Zomato Delivery\Project
 ```
 
@@ -232,6 +234,7 @@ Semua container berikut harus berstatus `Up`:
 | `spark-worker` | — | Spark Worker |
 | `streamlit` | 8501 | Dashboard |
 
+Jika Namenode dan Datanode tidak UP, edit file init-datanode.sh dan start-hdfs.sh dari CRLF menjadi LF
 ---
 
 ### Langkah 5 — Upload Dataset Bersih ke HDFS
