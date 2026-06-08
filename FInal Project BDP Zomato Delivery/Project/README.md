@@ -133,6 +133,8 @@ pip install pandas numpy kafka-python
 
 ```bash
 git clone https://github.com/VarrelT/BDP-Final-Project-Kelompok-4
+cd "BDP-Final-Project-Kelompok-4\FInal Project BDP Zomato Delivery\Project"
+atau
 cd FInal Project BDP Zomato Delivery\Project
 ```
 
@@ -232,6 +234,7 @@ Semua container berikut harus berstatus `Up`:
 | `spark-worker` | — | Spark Worker |
 | `streamlit` | 8501 | Dashboard |
 
+Jika Namenode dan Datanode tidak UP, edit file init-datanode.sh dan start-hdfs.sh dari CRLF menjadi LF
 ---
 
 ### Langkah 5 — Upload Dataset Bersih ke HDFS
@@ -381,10 +384,26 @@ Output setiap 10 detik:
 
 ## Findings & Conclusion
 
-Berdasarkan hasil batch analysis:
+Berdasarkan hasil batch analysis (Karena real-time berbeda" setiap batchnya):
 
+Total dataset yang dianalisis: 42.493 orders (Februari – April 2022)
+**1. Traffic Density vs Waktu Delivery**
+Traffic DensityAvg Delivery TimeTotal OrdersJam30.85 menit13.234High27.12 menit4.185Medium26.77 menit10.401Low21.34 menit14.582
+Kondisi Jam menghasilkan waktu delivery tertinggi (30.85 menit), 44% lebih lama dibanding kondisi Low (21.34 menit). Menariknya, mayoritas order justru terjadi di kondisi Jam (13.234) dan Low (14.582), menunjukkan bahwa volume order tinggi tidak selalu berkorelasi dengan kondisi traffic yang baik.
+**2. Kondisi Cuaca vs Waktu Delivery**
+CuacaAvg Delivery TimeTotal OrdersCloudy28.87 menit7.082Fog28.83 menit7.225Windy26.02 menit7.026Sandstorms25.83 menit7.044Stormy25.80 menit7.183Sunny21.71 menit6.842
+Cuaca Cloudy dan Fog menjadi kondisi paling lambat (~28.8 menit), sedangkan Sunny paling cepat (21.71 menit). Cukup mengejutkan bahwa Stormy dan Sandstorms tidak menjadi yang terburuk — kemungkinan karena kurir lebih berhati-hati dan volume order turun saat cuaca ekstrem.
+**3. Kota vs Waktu Delivery**
+KotaAvg Delivery TimeTotal OrdersSemi-Urban48.06 menit102Metropolitian27.23 menit31.808Urban23.02 menit9.481
+Semi-Urban memiliki rata-rata waktu delivery tertinggi (48.06 menit), hampir 2x lipat dibanding Urban (23.02 menit). Namun perlu dicatat bahwa jumlah order Semi-Urban sangat sedikit (102 orders), sehingga angka ini kurang representatif. Mayoritas order berasal dari kota Metropolitian (31.808 orders) dengan rata-rata 27.23 menit.
+**4. Heatmap Traffic × Cuaca**
+Kombinasi terburuk: Jam traffic + Cloudy (36.39 menit) dan Jam traffic + Fog (36.44 menit) — keduanya adalah sel berwarna merah gelap di heatmap.
+Kombinasi terbaik: Low traffic + Sunny (20.25 menit) dan Low traffic + Windy (20.72 menit) — konsisten dengan temuan individual.
+**5. Top Delivery Person**
+Kurir teratas (COIMBRES010DEL02 dan VADRES14DEL01) sama-sama menyelesaikan 63 deliveries dengan avg time ~25–26 menit dan rating ~4.59–4.64. Distribusi jumlah delivery antar kurir cukup merata di kisaran 62–63 deliveries untuk top 20, menunjukkan beban kerja yang terdistribusi baik.
 
-Dari streaming real-time:
+**Conclusion**
+Traffic density adalah faktor paling dominan dalam menentukan waktu pengiriman, dengan perbedaan hingga 9.51 menit antara kondisi Jam dan Low. Kondisi cuaca juga berpengaruh tetapi dengan rentang lebih kecil (~7 menit antara Cloudy dan Sunny). Untuk optimasi operasional, platform sebaiknya memprioritaskan routing kurir ke jalur Low traffic, terutama saat cuaca Cloudy atau Fog, karena kombinasi keduanya terbukti menghasilkan waktu delivery terburuk (36+ menit).
 
 
 ---
@@ -392,3 +411,4 @@ Dari streaming real-time:
 ## Known Limitations
 
 - **Dataset statis**: Producer membaca ulang `zomato_clean.csv` yang sama, bukan data live sungguhan, hanya simulasi live.
+- **Dashboard tidak auto-refresh otomatis**: Streamlit harus di-refresh manual oleh pengguna untuk melihat update terbaru dari streaming job
