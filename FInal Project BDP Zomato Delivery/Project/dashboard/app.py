@@ -49,7 +49,8 @@ with tab_realtime:
         )
 
         st.divider()
-
+        st.info("📅 Simulasi dari dataset Zomato Delivery — **Februari - April 2022** ")
+        
         # ── Row 2: Distribusi Kota + Traffic ────────────────────────────────
         col_city, col_traffic = st.columns(2)
 
@@ -182,7 +183,8 @@ with tab_batch:
         st.write(f"✅ Loaded! Keys: {list(batch.keys())}")
         st.metric("📦 Total Orders dalam Dataset", batch.get("total_orders", 0))
         st.divider()
-
+        st.info("📅 Simulasi dari dataset Zomato Delivery — **Februari - April 2022** ")
+        
         # ── 1. Bar chart: Traffic vs Avg Time ───────────────────────────────
         st.markdown("### 🚦 Avg Delivery Time per Traffic Density")
         df_t = pd.DataFrame(batch.get("by_traffic", []))
